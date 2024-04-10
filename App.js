@@ -1,12 +1,13 @@
 import React from 'react';
-import SignupScreen from './SignupScreen';
+import Routes from './Routes'; // Import Routes component
 
 const App = () => {
   return (
-    <div className="App">
-      <SignupScreen />
+    <div>
+      <Routes /> {/* Render Routes component */}
     </div>
   );
 };
 
 export default App;
+
