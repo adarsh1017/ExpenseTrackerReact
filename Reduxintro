@@ -1,0 +1,33 @@
+const { createStore } = require('redux');
+
+// Initial state
+const initialState = {
+    counter: 0
+};
+
+// Reducer function
+const counterReducer = (state = initialState, action) => {
+    switch (action.type) {
+        case 'increment':
+            return { ...state, counter: state.counter + 1 };
+        case 'decrement':
+            return { ...state, counter: state.counter - 1 }; // Decrement by 1
+        default:
+            return state;
+    }
+};
+
+// Create Redux store
+const store = createStore(counterReducer);
+
+// Dispatch "increment" action 5 times
+for (let i = 0; i < 5; i++) {
+    store.dispatch({ type: 'increment' });
+}
+
+// Dispatch "decrement" action
+store.dispatch({ type: 'decrement' });
+
+// Get current counter value
+const counterValue = store.getState().counter;
+console.log("Counter value:", counterValue); 
