@@ -1,0 +1,72 @@
+import { useState } from 'react';
+import classes from './Auth.module.css';
+
+const Auth = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const loginHandler = () => {
+    // Simulate logging in by updating isAuthenticated to true
+    setIsAuthenticated(true);
+  };
+
+  const logoutHandler = () => {
+    // Handle logout logic by resetting isAuthenticated to false
+    setIsAuthenticated(false);
+  };
+
+  const submitHandler = (event) => {
+    event.preventDefault();
+    // Handle form submission (you can add validation and other logic here)
+    console.log('Submitted:', email, password);
+    // Call loginHandler to simulate logging in
+    loginHandler();
+  };
+
+  if (!isAuthenticated) {
+    return (
+      <main className={classes.auth}>
+        <section>
+          <form onSubmit={submitHandler}>
+            <div className={classes.control}>
+              <label htmlFor='email'>Email</label>
+              <input
+                type='email'
+                id='email'
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
+              />
+            </div>
+            <div className={classes.control}>
+              <label htmlFor='password'>Password</label>
+              <input
+                type='password'
+                id='password'
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
+              />
+            </div>
+            <button type="submit">Login</button>
+          </form>
+        </section>
+      </main>
+    );
+  }
+
+  // If isAuthenticated is true, render the logged-in screen
+  return (
+    <header className={classes.header}>
+      <div className={classes.logo}>Redux Auth</div>
+      <nav>
+        <ul>
+          <li><a href="/">My Products</a></li>
+          <li><a href="/">My Sales</a></li>
+          <li><button onClick={logoutHandler}>Logout</button></li>
+        </ul>
+      </nav>
+    </header>
+  );
+};
+
+export default Auth;
