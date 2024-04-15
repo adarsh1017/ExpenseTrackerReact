@@ -1,0 +1,102 @@
+// Test adding a new expense with invalid input
+test('Add new expense with invalid input', () => {
+  const initialExpenseCount = calculateTotalExpenses();
+  const newExpense = { amount: -50, category: 'Food', date: '2024-04-13' }; // Negative amount as invalid input
+  addExpense(newExpense);
+  const updatedExpenseCount = calculateTotalExpenses();
+  expect(updatedExpenseCount).toBe(initialExpenseCount); // Expense count should remain the same
+});
+
+// Test editing an existing expense with valid input
+test('Edit existing expense with valid input', () => {
+  const newExpense = { amount: 50, category: 'Food', date: '2024-04-13' };
+  addExpense(newExpense); // Adding a new expense
+  const updatedExpense = { amount: 60, category: 'Food', date: '2024-04-14' }; // Updated expense details
+  editExpense(1, updatedExpense); // Assuming the first expense is edited
+  const editedExpense = getExpenseById(1); // Retrieve the edited expense
+  expect(editedExpense.amount).toBe(updatedExpense.amount); // Check if the amount is updated
+  expect(editedExpense.date).toBe(updatedExpense.date); // Check if the date is updated
+});
+
+// Test editing an existing expense with invalid input
+test('Edit existing expense with invalid input', () => {
+  const newExpense = { amount: 50, category: 'Food', date: '2024-04-13' };
+  addExpense(newExpense); // Adding a new expense
+  const updatedExpense = { amount: -60, category: 'Food', date: '2024-04-14' }; // Negative amount as invalid input
+  editExpense(1, updatedExpense); // Attempt to edit the expense
+  const editedExpense = getExpenseById(1); // Retrieve the edited expense
+  expect(editedExpense).toBe(newExpense); // Expense should remain unchanged
+});
+
+// Test deleting an existing expense
+test('Delete existing expense', () => {
+  const initialExpenseCount = calculateTotalExpenses();
+  const newExpense = { amount: 50, category: 'Food', date: '2024-04-13' };
+  addExpense(newExpense); // Adding a new expense
+  deleteExpense(1); // Assuming the first expense is deleted
+  const updatedExpenseCount = calculateTotalExpenses();
+  expect(updatedExpenseCount).toBe(initialExpenseCount); // Expense count should decrease by 1
+});
+
+// Test retrieving all expenses for a specific category
+test('Get expenses by category', () => {
+  const newExpense1 = { amount: 50, category: 'Food', date: '2024-04-13' };
+  const newExpense2 = { amount: 30, category: 'Food', date: '2024-04-14' };
+  addExpense(newExpense1); // Adding a new expense
+  addExpense(newExpense2); // Adding another expense
+  const expenses = getExpensesByCategory('Food');
+  expect(expenses.length).toBe(2); // Two expenses should be returned
+  expect(expenses[0].amount + expenses[1].amount).toBe(newExpense1.amount + newExpense2.amount); // Total amount should match
+});
+
+// Test retrieving expenses within a specific date range
+test('Get expenses by date range', () => {
+  const newExpense1 = { amount: 50, category: 'Food', date: '2024-04-13' };
+  const newExpense2 = { amount: 30, category: 'Food', date: '2024-04-14' };
+  addExpense(newExpense1); // Adding a new expense
+  addExpense(newExpense2); // Adding another expense
+  const startDate = '2024-04-13';
+  const endDate = '2024-04-14';
+  const expenses = getExpensesByDateRange(startDate, endDate);
+  expect(expenses.length).toBe(2); // Two expenses should be returned
+});
+
+// Test retrieving total expenses for a specific category
+test('Get total expenses by category', () => {
+  const newExpense1 = { amount: 50, category: 'Food', date: '2024-04-13' };
+  const newExpense2 = { amount: 30, category: 'Food', date: '2024-04-14' };
+  addExpense(newExpense1); // Adding a new expense
+  addExpense(newExpense2); // Adding another expense
+  const totalExpenses = getTotalExpensesByCategory('Food');
+  expect(totalExpenses).toBe(newExpense1.amount + newExpense2.amount); // Total amount should match
+});
+
+// Test sorting expenses by amount (ascending and descending)
+test('Sort expenses by amount', () => {
+  // Prepare some test expenses with different amounts
+  const expenses = [
+    { id: 1, amount: 50, category: 'Food', date: '2024-04-13' },
+    { id: 2, amount: 30, category: 'Food', date: '2024-04-14' },
+    { id: 3, amount: 70, category: 'Food', date: '2024-04-15' }
+  ];
+  expenses.forEach(expense => addExpense(expense)); // Add each test expense
+  let sortedExpenses = sortExpensesByAmount('asc'); // Sort in ascending order
+  expect(sortedExpenses[0].amount).toBe(30); // Lowest amount should be first
+  sortedExpenses = sortExpensesByAmount('desc'); // Sort in descending order
+  expect(sortedExpenses[0].amount).toBe(70); // Highest amount should be first
+});
+
+// Test calculating the total expenses over a given period
+test('Calculate total expenses', () => {
+  // Prepare some test expenses with different amounts
+  const expenses = [
+    { amount: 50, category: 'Food', date: '2024-04-13' },
+    { amount: 30, category: 'Food', date: '2024-04-14' },
+    { amount: 70, category: 'Food', date: '2024-04-15' }
+  ];
+  expenses.forEach(expense => addExpense(expense)); // Add each test expense
+  const startDate = '2024-04-13';
+  const endDate = '2024-04-15';
+  const totalExpenses = calculateTotalExpenses(startDate, endDate);
+  expect(totalExpenses).toBe(150); // Total amount of expenses over the given period
+});
