@@ -1,0 +1,97 @@
+// expenseTracker.test.js
+
+import React from 'react';
+import { render, fireEvent } from '@testing-library/react';
+import ExpenseList from './ExpenseList';
+import AddExpenseForm from './AddExpenseForm';
+import ExpenseTracker from './ExpenseTracker';
+
+test('renders ExpenseList component', () => {
+  render(<ExpenseList />);
+});
+
+test('renders AddExpenseForm component', () => {
+  render(<AddExpenseForm />);
+});
+
+test('clicking Add Expense button opens AddExpenseForm', () => {
+  const { getByText, getByTestId } = render(<ExpenseTracker />);
+  const addButton = getByText('Add Expense');
+  fireEvent.click(addButton);
+  const addExpenseForm = getByTestId('add-expense-form');
+  expect(addExpenseForm).toBeInTheDocument();
+});
+
+test('displays expenses correctly', () => {
+  const expenses = [
+    { id: 1, title: 'Expense 1', amount: 100 },
+    { id: 2, title: 'Expense 2', amount: 200 },
+  ];
+  const { getByText } = render(<ExpenseList expenses={expenses} />);
+  expect(getByText('Expense 1')).toBeInTheDocument();
+  expect(getByText('Expense 2')).toBeInTheDocument();
+});
+
+test('displays "No expenses found" message when no expenses are passed', () => {
+  const { getByText } = render(<ExpenseList expenses={[]} />);
+  expect(getByText('No expenses found')).toBeInTheDocument();
+});
+
+test('submits the form correctly', () => {
+  const handleSubmit = jest.fn();
+  const { getByTestId, getByLabelText } = render(
+    <AddExpenseForm onSubmit={handleSubmit} />
+  );
+  const titleInput = getByLabelText('Title');
+  const amountInput = getByLabelText('Amount');
+  const addButton = getByTestId('add-expense-button');
+  fireEvent.change(titleInput, { target: { value: 'Test Expense' } });
+  fireEvent.change(amountInput, { target: { value: '100' } });
+  fireEvent.click(addButton);
+  expect(handleSubmit).toHaveBeenCalledWith({
+    title: 'Test Expense',
+    amount: '100',
+  });
+});
+
+test('fetches expenses correctly', () => {
+  const expenses = [
+    { id: 1, title: 'Expense 1', amount: 100 },
+    { id: 2, title: 'Expense 2', amount: 200 },
+  ];
+  jest.spyOn(global, 'fetch').mockResolvedValue({
+    json: jest.fn().mockResolvedValue(expenses),
+  });
+
+  const { getByText } = render(<ExpenseTracker />);
+  expect(getByText('Expense 1')).toBeInTheDocument();
+  expect(getByText('Expense 2')).toBeInTheDocument();
+
+  global.fetch.mockRestore();
+});
+
+test('handles errors when fetching expenses', async () => {
+  jest.spyOn(global, 'fetch').mockRejectedValue(new Error('Error fetching expenses'));
+
+  const { getByText } = render(<ExpenseTracker />);
+  expect(getByText('Error fetching expenses')).toBeInTheDocument();
+
+  global.fetch.mockRestore();
+});
+
+test('deletes an expense correctly', () => {
+  const deleteExpense = jest.fn();
+  const expenses = [
+    { id: 1, title: 'Expense 1', amount: 100 },
+    { id: 2, title: 'Expense 2', amount: 200 },
+  ];
+  const { getAllByTestId } = render(<ExpenseList expenses={expenses} deleteExpense={deleteExpense} />);
+  const deleteButtons = getAllByTestId('delete-expense-button');
+  fireEvent.click(deleteButtons[0]);
+  expect(deleteExpense).toHaveBeenCalledWith(1);
+});
+
+test('handles an empty list correctly', () => {
+  const { getByText } = render(<ExpenseList expenses={[]} />);
+  expect(getByText('No expenses found')).toBeInTheDocument();
+});
